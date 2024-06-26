@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profiles</title>
+    <style>
+        body {color: #f2f2f2;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #060505;
+            
+            font-size: 12px;
+        }
+        
+        .container {
+            text-align: center;
+        }
+        
+        button {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .profiles-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 12px;
+            background-color: #403e3e;
+            width: 180px;
+            text-align: center;
+        }
+        
+        .profile-card img {
+            border-radius: 50%;
+        }
+        
+        .user-table {
+            width: 80%;
+            border-collapse: collapse;
+        }
+        
+        .user-table th, .user-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .user-table th {
+            background-color: #525151;
+        }</style>
+</head>
+<body><br><br><br>
+    <div class="container">
+        <br><br>
+        <div id="profilesContainer" class="profiles-container"></div>
+        <table id="userTable" class="user-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table><br><br><br> <button id="moreUsersBtn">More Users</button>
+    </div>
+    <script> document.getElementById('moreUsersBtn').addEventListener('click', fetchUsers);
+
+        async function fetchUsers() {
+            try {
+                const response = await fetch('https://randomuser.me/api/?results=5');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                displayProfiles(data.results);
+                updateTable(data.results);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+        
+        function displayProfiles(users) {
+            const profilesContainer = document.getElementById('profilesContainer');
+            profilesContainer.innerHTML = ''; // Clear previous profiles
+        
+            users.forEach(user => {
+                const profileCard = document.createElement('div');
+                profileCard.className = 'profile-card';
+                profileCard.innerHTML = `
+                    <img src="${user.picture.medium}" alt="${user.name.first} ${user.name.last}">
+                    <h2>${user.name.first} ${user.name.last}</h2>
+                    <p>${user.email}</p>
+                `;
+                profilesContainer.appendChild(profileCard);
+            });
+        }
+        
+        function updateTable(users) {
+            const tbody = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; // Clear previous table rows
+        
+            users.forEach(user => {
+                const row = tbody.insertRow();
+                const cellName = row.insertCell(0);
+                const cellEmail = row.insertCell(1);
+                cellName.textContent = `${user.name.first} ${user.name.last}`;
+                cellEmail.textContent = user.email;
+            });
+        }
+        
+        // Fetch users on initial load
+        fetchUsers();
+        </script>
+</body>
+</html>         
